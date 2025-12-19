@@ -1,0 +1,10 @@
+transformers
+accelerate
+langchain
+langchain-community
+langchain-text-splitters
+chromadb
+pypdf
+sentence-transformers
+bitsandbytes
+torch
