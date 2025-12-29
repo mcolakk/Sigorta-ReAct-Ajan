@@ -1,74 +1,84 @@
-# 🛡️ AI Sigorta Asistanı (AI Insurance Assistant)
+# 🧠 DeepSeek Otonom Yapay Zeka Ajanı (RAG + Tools)
 
-Bu proje, **Doğal Dil İşleme (NLP)** ve **Generative AI** teknolojilerini kullanarak sigorta sektörü için geliştirilmiş akıllı bir asistandır.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![DeepSeek](https://img.shields.io/badge/Model-DeepSeek--V3-purple)
+![LangChain](https://img.shields.io/badge/Orchestration-LangChain-green)
+![Status](https://img.shields.io/badge/Status-Benchmark%20Passed-success)
 
-Proje, **LangChain** ve **Groq (Llama 3)** altyapısını kullanarak kullanıcıların sigorta poliçeleri, araç yedek parça fiyatları, finansal veriler ve risk analizleri hakkındaki sorularını yanıtlar. Sistem, **RAG (Retrieval-Augmented Generation)** mimarisi ile PDF dokümanlarını okuyabilir ve **Agent (Ajan)** yapısı ile internetten canlı veri toplayabilir.
+Bu proje, standart Dil Modellerinin (LLM) en büyük kısıtı olan "güncel veriye erişim" ve "halüsinasyon" sorunlarını çözmek amacıyla geliştirilmiş **Otonom Bir Ajan (Autonomous Agent)** sistemidir.
+
+**DeepSeek-V3** modelini beyin olarak kullanan sistem; borsa verilerini çekebilir, hava durumunu kontrol edebilir, internette arama yapabilir ve şirket içi PDF dokümanlarını (RAG) sorgulayabilir.
+
+---
 
 ## 🚀 Özellikler
 
-Bu asistan aşağıdaki yeteneklere sahip otonom araçlar (tools) kullanır:
+Bu ajan, sadece sohbet etmekle kalmaz, **karar verir ve eyleme geçer (ReAct Mimarisi):**
 
-* **📄 RAG (Doküman Analizi):** Kasko poliçesi gibi PDF dosyalarını vektör veritabanına (ChromaDB) dönüştürerek poliçe kapsamı hakkında soruları yanıtlar.
-* **🌍 Canlı Web Araması (DuckDuckGo):** Yedek parça fiyatları, kronik araç arızaları veya güncel sigorta haberleri için interneti tarar.
-* **📈 Finansal Analiz (Yahoo Finance):** Döviz kurları (Dolar/Euro) ve Altın fiyatlarını canlı takip ederek maliyet hesabı yapar.
-* **☁️ Risk Analizi (Hava Durumu API):** Anlık hava durumu verisi çekerek (Dolu, Sel riski vb.) sigorta risk uyarısı yapar.
-* **🚗 Tramer/Hasar Sorgusu (Simülasyon):** Plaka üzerinden hasar kaydı kontrolü yapar.
+* 📈 **Canlı Finans Takibi:** `yfinance` API ile Borsa, Kripto ve Döviz kurlarını anlık çeker. (Örn: "THY hissesi ne kadar?", "Bitcoin kaç dolar?")
+* weather **Anlık Hava Durumu:** `Open-Meteo` ile dünya genelindeki şehirlerin hava durumunu sorgular.
+* 🔍 **Web Arama Yeteneği:** `DuckDuckGo` ile modelin eğitim verisinde olmayan güncel olayları araştırır.
+* 📄 **Doküman Analizi (RAG):** Şirket içi PDF dosyalarını (Örn: Sigorta Poliçesi) vektör veritabanına gömerek soruları bu kaynak üzerinden cevaplar.
+* 🧠 **Düşünce Zinciri (CoT):** Ajanın hangi aracı neden seçtiğini gösteren detaylı loglama sistemi.
 
-## 🛠️ Kullanılan Teknolojiler
+---
 
-* **Python 3.10+**
-* **LLM:** Llama-3.3-70b-versatile (via Groq API)
-* **Orchestration:** LangChain & LangChain Community
-* **Vector Store:** ChromaDB
-* **Embeddings:** HuggingFace (`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`)
-* **Tools:** `yfinance`, `duckduckgo-search`, `requests`
-* **Platform:** Google Colab
+## 🛠️ Sistem Mimarisi
 
-## ⚙️ Kurulum ve Çalıştırma
+Sistem 4 ana bileşenden oluşur:
 
-Bu proje Google Colab üzerinde çalıştırılmak üzere tasarlanmıştır.
+1.  **Manager Agent (Yönetici):** Kullanıcının niyetini anlar ve hangi aracı (`tool`) kullanacağına karar verir.
+2.  **Tool Belt (Araç Seti):** Python fonksiyonları (API çağrıları).
+3.  **Observation (Gözlem):** API'dan dönen ham verinin işlenmesi.
+4.  **Judge (Hakem):** Cevabın doğruluğunu denetleyen değerlendirme katmanı.
 
-1. **Repoyu Klonlayın veya İndirin:**
-   Proje dosyasını (`.ipynb`) bilgisayarınıza indirin.
 
-2. **Google Colab'de Açın:**
-   Dosyayı Google Colab'e yükleyin.
 
-3. **API Anahtarını Ayarlayın:**
-   * [Groq Console](https://console.groq.com/) adresinden ücretsiz bir API Key alın.
-   * Colab sol menüsündeki **Anahtar (Secrets)** simgesine tıklayın.
-   * `groq1` adıyla bir anahtar oluşturun ve değerini girin.
+---
 
-4. **PDF Yükleyin (Opsiyonel):**
-   * Sistemin kendi dokümanlarınızla konuşması için `kasko_policesi.pdf` adında bir dosyayı Colab dosya yöneticisine yükleyin.
-   * *Not: Dosya yüklemezseniz sistem sanal verilerle çalışmaya devam eder.*
+## 📊 Benchmark ve Performans
 
-5. **Hücreleri Çalıştırın:**
-   Tüm hücreleri sırasıyla çalıştırın ve `👉 Soru:` kısmına sorunuzu yazın.
+Sistemin başarısı, **40 soruluk** kapsamlı bir test seti ile ölçülmüştür. Testlerde **"Ground Truth Enjeksiyonu"** (Referans Veri) yöntemi kullanılarak, canlı verilerin doğruluğu otomatik olarak test edilmiştir.
 
-## 📝 Örnek Senaryolar
+| Kategori | Soru Tipi | Başarı Oranı | Açıklama |
+| :--- | :--- | :--- | :--- |
+| **Finans** | Canlı Veri | **%100 (10/10)** | API entegrasyonu kusursuz. Sembolleri (Örn: Dolar -> TRY=X) otomatik tanır. |
+| **Hava Durumu**| Canlı Veri | **%100 (10/10)** | Şehir bazlı sıcaklık verilerini doğru çeker. |
+| **Web Search** | Halüsinasyon | **Yüksek** | "Türkiye'nin Mars Valisi" gibi tuzak sorularda "Yoktur" cevabını verir. |
+| **RAG (PDF)** | Doküman | **Orta** | PDF verisini okur ancak bazen genel bilgisini (Pre-training) tercih edebilir. |
 
-Sisteme sorabileceğiniz bazı örnek sorular:
+> **Not:** Benchmark sonuçları `ground_truth_benchmark.xlsx` dosyasında, ajanın düşünce süreci ise `ajan_dusunce_gunlugu.txt` dosyasında detaylıca incelenebilir.
 
-* **Poliçe Sorusu:** *"Poliçemde sel hasarı karşılanıyor mu?"* (PDF'ten okur)
-* **Parça Fiyatı:** *"Fiat Egea 2023 ön tampon fiyatı ne kadar?"* (İnternetten arar)
-* **Finans:** *"Dolar kuru şu an ne kadar? Hasar maliyetim artar mı?"* (Borsadan çeker)
-* **Risk:** *"İstanbul'da şu an dolu riski var mı?"* (Hava durumuna bakar)
+---
 
-## 🧠 Mimari Yapı
+## ⚙️ Kurulum
 
-Proje, **ReAct (Reasoning and Acting)** benzeri bir döngü kullanır:
+Projeyi yerel ortamınızda çalıştırmak için:
 
-1.  **Kullanıcı Sorusu:** Sisteme girilir.
-2.  **Karar Mekanizması (LLM):** Model, soruyu analiz eder ve hangi aracı (Tool) kullanması gerektiğini seçer (Örn: `Action: web_search`).
-3.  **Eylem (Action):** Python fonksiyonu çalışır ve veriyi getirir.
-4.  **Gözlem (Observation):** Gelen veri modele geri beslenir.
-5.  **Cevap (Answer):** Model, veriyi yorumlayarak son kullanıcıya Türkçe cevap verir.
+1.  **Depoyu Klonlayın:**
+    ```bash
+    git clone [https://github.com/kullaniciadiniz/deepseek-agent.git](https://github.com/kullaniciadiniz/deepseek-agent.git)
+    cd deepseek-agent
+    ```
 
-## 🤝 Katkıda Bulunma
+2.  **Gereksinimleri Yükleyin:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-Bu bir üniversite projesidir. Geliştirmek için Pull Request atabilir veya fikirlerinizi belirtebilirsiniz.
+3.  **API Anahtarını Tanımlayın:**
+    Kod içerisindeki veya `.env` dosyasındaki API anahtarı bölümünü düzenleyin:
+    ```python
+    api_key = "sk-senin-deepseek-anahtarin"
+    ```
 
-## 📄 Lisans
+---
 
-Bu proje MIT Lisansı ile lisanslanmıştır.
+## 🖥️ Kullanım
+
+Ajanı iki farklı modda çalıştırabilirsiniz:
+
+### 1. İnteraktif Sohbet Modu
+Sürekli soru-cevap yapabileceğiniz terminal arayüzü:
+```python
+start_interactive_chat()
